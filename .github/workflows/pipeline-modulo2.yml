@@ -1,0 +1,44 @@
+name: Pipeline Módulo 2
+
+run-name: "Build e Test — ${{ github.actor }} @ ${{ github.ref_name }}"
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    outputs:
+      versao: ${{ steps.detectar-versao.outputs.numero }}
+
+    steps:
+      - name: Simular compilação
+        run: echo "Compilando o projeto..."
+
+      - name: Detectar versão do projeto
+        id: detectar-versao
+        run: echo "numero=1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Confirmar versão detectada
+        run: echo "Versão detectada:${{ steps.detectar-versao.outputs.numero }}"
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    steps:
+      - name: Exibir versão recebida do job build
+        run: echo "Testando a versão ${{ needs.build.outputs.versao }}"
+
+      - name: Exibir informações do repositório
+        run: |
+          echo "=== Informações do Run ==="
+          echo "Repositório: ${{ github.repository }}"
+          echo "Branch: ${{ github.ref_name }}"
+          echo "Commit: ${{ github.sha }}"
+          echo "Autor: ${{ github.actor }}"
+          echo "Run número: ${{ github.run_number }}"
+          echo "Runner OS: ${{ runner.os }}"
+
+      - name: Simular execução de testes
+        run: echo "Todos os testes passaram para a versão ${{ needs.build.outputs.versao }}"
