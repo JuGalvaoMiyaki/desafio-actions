@@ -1,0 +1,14 @@
+name: Hello Actions
+
+on: [push]
+
+jobs:
+  primeiro-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Exibir mensagem de boas-vindas
+        run: echo "Workflow funcionando!"
+
+      - name: Exibir informações do repositório
+        run: echo "Repositório ${{ github.repository }} na branch ${{ github.ref_name }}"
