@@ -25,7 +25,7 @@ jobs:
           echo "Disparado por: ${{ github.actor }}"
           echo "Run número: ${{ github.run_number }}"
 
-      - name: Simular deploy no ambiente selecionado 3
+      - name: Simular deploy no ambiente selecionado 
         run: |
           echo "Iniciando deploy para o ambiente: ${{ inputs.ambiente }}"
           if [ "${{ inputs.ambiente }}" = "prod" ]; then
