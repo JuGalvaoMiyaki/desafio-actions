@@ -1,0 +1,35 @@
+name: Deploy Manual
+
+on:
+  workflow_dispatch:
+    inputs:
+      ambiente:
+        description: "Ambiente de destino do deploy"
+        required: true
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+        default: dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirmar trigger correto
+        run: |
+          echo "=== Workflow 3 disparado ==="
+          echo "Evento    : ${{ github.event_name }}"
+          echo "Ambiente  : ${{ inputs.ambiente }}"
+          echo "Disparado por: ${{ github.actor }}"
+          echo "Run número: ${{ github.run_number }}"
+
+      - name: Simular deploy no ambiente selecionado
+        run: |
+          echo "Iniciando deploy para o ambiente: ${{ inputs.ambiente }}"
+          if [ "${{ inputs.ambiente }}" = "prod" ]; then
+            echo "⚠️  Deploy em produção — verifique os logs com atenção"
+          else
+            echo "Deploy em ambiente não-produtivo concluído"
+          fi
