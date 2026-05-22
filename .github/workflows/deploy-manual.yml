@@ -31,5 +31,5 @@ jobs:
           if [ "${{ inputs.ambiente }}" = "prod" ]; then
             echo "⚠️  Deploy em produção — verifique os logs com atenção"
           else
-            echo "Deploy em ambiente não-produtivo concluído."
+            echo "Deploy em ambiente não-produtivo concluído"
           fi
