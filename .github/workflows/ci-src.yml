@@ -1,0 +1,20 @@
+name: CI — Alterações em src/
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/**"
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirmar trigger correto
+        run: |
+          echo "=== Workflow 1 disparado ==="
+          echo "Evento   : ${{ github.event_name }}"
+          echo "Branch   : ${{ github.ref_name }}"
+          echo "Autor    : ${{ github.actor }}"
+          echo "Commit   : ${{ github.sha }}"
