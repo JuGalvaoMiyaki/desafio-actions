@@ -1,0 +1,92 @@
+name: CI Módulo 4
+
+run-name: "CI — ${{ github.actor }} @ ${{ github.ref_name }} #${{ github.run_number }}"
+
+on:
+  push:
+    branches:
+      - master
+      - feature/**
+
+concurrency:
+  group: ci-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      versao: ${{ steps.gerar-versao.outputs.numero }}
+
+    steps:
+      - name: Simular compilação
+        run: |
+          echo "Iniciando compilação..."
+          mkdir -p dist
+          echo "app-versao-${{ github.run_number }}" > dist/app.txt
+          echo "Compilação concluída"
+
+      - name: Gerar versão do build
+        id: gerar-versao
+        run: echo "numero=1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Confirmar versão gerada
+        run: echo "Versão do build:${{ steps.gerar-versao.outputs.numero }}"
+
+      - name: Upload do artifact de build
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-dist
+          path: dist/
+          retention-days: 7
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 10
+
+    steps:
+      - name: Download do artifact de build
+        uses: actions/download-artifact@v4
+        with:
+          name: app-dist
+          path: dist/
+
+      - name: Verificar artifact recebido
+        run: |
+          echo "=== Conteúdo do artifact ==="
+          ls -la dist/
+          cat dist/app.txt
+
+      - name: Exibir versão recebida do job build
+        run: echo "Testando versão ${{ needs.build.outputs.versao }}"
+
+      - name: Simular execução de testes (com falha proposital)
+        run: |
+          echo "Executando testes para versão ${{ needs.build.outputs.versao }}..."
+          echo "Teste 1: passou"
+          echo "Teste 2: passou"
+          echo "Teste 3: falhou — simulação de erro"
+          exit 1
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: failure()
+    timeout-minutes: 5
+
+    steps:
+      - name: Gerar relatório de falha
+        run: |
+          echo "========================================"
+          echo "        ALERTA: PIPELINE COM FALHA      "
+          echo "========================================"
+          echo "Versão    : ${{ needs.build.outputs.versao }}"
+          echo "Branch    : ${{ github.ref_name }}"
+          echo "Commit    : ${{ github.sha }}"
+          echo "Autor     : ${{ github.actor }}"
+          echo "Run número: ${{ github.run_number }}"
+          echo "URL do run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          echo "========================================"
