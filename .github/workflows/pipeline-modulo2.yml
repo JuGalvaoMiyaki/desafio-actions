@@ -30,7 +30,7 @@ jobs:
       - name: Exibir versão recebida do job build
         run: echo "Testando a versão ${{ needs.build.outputs.versao }}"
 
-      - name: Exibir informações do repositório
+      - name: Exibir informações do repositório 1
         run: |
           echo "=== Informações do Run ==="
           echo "Repositório: ${{ github.repository }}"
