@@ -1,0 +1,20 @@
+name: Revisão — PR Aberto
+
+on:
+  pull_request:
+    types:
+      - opened
+
+jobs:
+  revisar:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirmar trigger correto 2
+        run: |
+          echo "=== Workflow 2 disparado ==="
+          echo "Evento     : ${{ github.event_name }}"
+          echo "PR número  : ${{ github.event.pull_request.number }}"
+          echo "Título     : ${{ github.event.pull_request.title }}"
+          echo "Autor      : ${{ github.actor }}"
+          echo "Branch base: ${{ github.event.pull_request.base.ref }}"
+          echo "Branch head: ${{ github.event.pull_request.head.ref }}"
