@@ -9,7 +9,7 @@ jobs:
   revisar:
     runs-on: ubuntu-latest
     steps:
-      - name: Confirmar trigger correto
+      - name: Confirmar trigger correto 2
         run: |
           echo "=== Workflow 2 disparado ==="
           echo "Evento     : ${{ github.event_name }}"
