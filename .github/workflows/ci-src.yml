@@ -3,7 +3,7 @@ name: CI — Alterações em src/
 on:
   push:
     branches:
-      - main
+      - master
     paths:
       - "src/**"
 
