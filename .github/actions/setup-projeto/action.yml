@@ -1,4 +1,4 @@
-name: Setup do Projeto
+name: Setup do Projeto Módulo 5
 description: >
   Faz checkout do repositório, configura o Node.js,
   restaura o cache de dependências e executa npm ci.
