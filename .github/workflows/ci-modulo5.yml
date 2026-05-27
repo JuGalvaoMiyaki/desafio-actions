@@ -1,0 +1,87 @@
+name: CI Módulo 5
+
+run-name: "CI — ${{ github.actor }} @ ${{ github.ref_name }} #${{ github.run_number }}"
+
+on:
+  push:
+    branches:
+      - master      
+      - feature/**
+
+concurrency:
+  group: ci-modulo5-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      versao: ${{ steps.gerar-versao.outputs.numero }}
+
+    steps:
+      - name: Setup do projeto
+        uses: ./.github/actions/setup-projeto
+        with:
+          node-version: "20"
+
+      - name: Gerar versão do build
+        id: gerar-versao
+        run: echo "numero=1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Simular compilação e gerar artifact
+        run: |
+          mkdir -p dist
+          echo "app-versao-${{ github.run_number }}" > dist/app.txt
+          echo "Build concluído — versão ${{ steps.gerar-versao.outputs.numero }}"
+
+      - name: Upload do artifact de build
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882  # v4.4.3
+        with:
+          name: app-dist
+          path: dist/
+          retention-days: 7
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 10
+
+    steps:
+      - name: Setup do projeto
+        uses: ./.github/actions/setup-projeto
+        with:
+          node-version: "20"
+
+      - name: Download do artifact de build
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16  # v4.1.8
+        with:
+          name: app-dist
+          path: dist/
+
+      - name: Verificar artifact e versão recebida
+        run: |
+          echo "=== Artifact recebido ==="
+          cat dist/app.txt
+          echo "Versão do job build: ${{ needs.build.outputs.versao }}"
+
+      - name: Simular execução de testes
+        run: echo "Todos os testes passaram para a versão ${{ needs.build.outputs.versao }}"
+
+  notify:
+    runs-on: ubuntu-latest
+    needs: [build, test]
+    if: failure()
+    timeout-minutes: 5
+
+    steps:
+      - name: Relatório de falha
+        run: |
+          echo "========================================"
+          echo "        ALERTA: PIPELINE COM FALHA      "
+          echo "========================================"
+          echo "Versão : ${{ needs.build.outputs.versao }}"
+          echo "Branch : ${{ github.ref_name }}"
+          echo "Autor  : ${{ github.actor }}"
+          echo "Run    : ${{ github.run_number }}"
