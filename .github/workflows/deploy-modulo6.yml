@@ -1,0 +1,75 @@
+name: Deploy Módulo 6
+
+run-name: "Deploy — ${{ github.actor }} @ ${{ github.ref_name }} #${{ github.run_number }}"
+
+on:
+  push:
+    branches:
+      - master
+      
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Setup do projeto
+        uses: ./.github/actions/setup-projeto
+        with:
+          node-version: "20"
+
+      - name: Executar testes
+        run: |
+          echo "=== Executando testes ==="
+          echo "Repositório : ${{ github.repository }}"
+          echo "Branch      : ${{ github.ref_name }}"
+          echo "Commit      : ${{ github.sha }}"
+          echo "Testes passaram"
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: ci
+    timeout-minutes: 10
+    environment:
+      name: staging
+      url: ${{ vars.TARGET_URL }}
+
+    steps:
+      - name: Exibir configuração do deploy
+        run: |
+          echo "=== Configuração do Deploy ==="
+          echo "Ambiente    : ${{ vars.ENVIRONMENT_NAME }}"
+          echo "URL alvo    : ${{ vars.TARGET_URL }}"
+          echo "Branch      : ${{ github.ref_name }}"
+          echo "Run número  : ${{ github.run_number }}"
+
+      - name: Verificar presença do token de deploy
+        run: |
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            echo "ERRO: DEPLOY_TOKEN não está configurado"
+            exit 1
+          fi
+          echo "Token de deploy presente — continuando"
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Tentar exibir o token (demonstração de mascaramento)
+        run: |
+          echo "Tentando exibir token diretamente:"
+          echo "$DEPLOY_TOKEN"
+          echo "O valor acima deve aparecer como *** nos logs"
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Simular deploy autenticado
+        run: |
+          echo "=== Iniciando Deploy ==="
+          echo "Destino     : ${{ vars.TARGET_URL }}"
+          echo "Ambiente    : ${{ vars.ENVIRONMENT_NAME }}"
+          echo "Autenticando com token: ***"
+          echo "Deploy concluído com sucesso para ${{ vars.TARGET_URL }}"
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
