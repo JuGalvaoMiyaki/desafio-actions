@@ -20,9 +20,7 @@ jobs:
     with:
       node-version: "20"
       run-tests: true
-    secrets:
-      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}   # passagem explícita
-
+    
   deploy:
     needs: ci
     uses: ./.github/workflows/reusable-deploy.yml
