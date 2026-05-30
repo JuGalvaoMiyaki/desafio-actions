@@ -1,0 +1,61 @@
+name: CI Reutilizável
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: "Versão do Node.js a usar no CI"
+        required: false
+        type: string
+        default: "20"
+
+      run-tests:
+        description: "Executar testes além do lint?"
+        required: false
+        type: boolean
+        default: true
+
+    outputs:
+      versao-build:
+        description: "Versão gerada durante o CI"
+        value: ${{ jobs.lint-test.outputs.versao }}
+
+permissions:
+  contents: read
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    outputs:
+      versao: ${{ steps.gerar-versao.outputs.numero }}
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
+
+      - name: Configurar Node.js ${{ inputs.node-version }}
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
+        with:
+          node-version: ${{ inputs.node-version }}
+
+      - name: Simular lint
+        run: |
+          echo "=== Lint ==="
+          echo "Verificando código com Node ${{ inputs.node-version }}..."
+          echo "Lint passou"
+
+      - name: Gerar versão do build
+        id: gerar-versao
+        run: echo "numero=1.0.${{ github.run_number }}" >> $GITHUB_OUTPUT
+
+      - name: Simular testes
+        if: inputs.run-tests == true
+        run: |
+          echo "=== Testes ==="
+          echo "Executando testes para versão ${{ steps.gerar-versao.outputs.numero }}..."
+          echo "Todos os testes passaram"
+
+      - name: Confirmar versão exportada
+        run: echo "Versão exportada para o caller:${{ steps.gerar-versao.outputs.numero }}"

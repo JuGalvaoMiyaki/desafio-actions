@@ -1,0 +1,33 @@
+name: Pipeline Principal
+
+run-name: "Pipeline — ${{ github.actor }} @ ${{ github.ref_name }} #${{ github.run_number }}"
+
+on:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/reusable-ci.yml
+    with:
+      node-version: "20"
+      run-tests: true
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}   # passagem explícita
+
+  deploy:
+    needs: ci
+    uses: ./.github/workflows/reusable-deploy.yml
+    with:
+      environment: staging
+      versao: ${{ needs.ci.outputs.versao-build }}  # output do reutilizável de CI
+    secrets:
+      DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}

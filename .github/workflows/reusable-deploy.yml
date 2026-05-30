@@ -1,0 +1,53 @@
+name: Deploy Reutilizável
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        description: "Ambiente de destino do deploy"
+        required: true
+        type: string
+
+      versao:
+        description: "Versão a ser deployada"
+        required: true
+        type: string
+
+    secrets:
+      DEPLOY_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - name: Validar inputs recebidos
+        run: |
+          echo "=== Configuração do Deploy ==="
+          echo "Ambiente : ${{ inputs.environment }}"
+          echo "Versão   : ${{ inputs.versao }}"
+
+      - name: Verificar token de deploy
+        run: |
+          if [ -z "$DEPLOY_TOKEN" ]; then
+            echo "ERRO: DEPLOY_TOKEN não foi passado pelo caller"
+            exit 1
+          fi
+          echo "Token de deploy presente"
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+
+      - name: Simular deploy autenticado
+        run: |
+          echo "=== Deploy ==="
+          echo "Fazendo deploy da versão ${{ inputs.versao }} para ${{ inputs.environment }}"
+          echo "Autenticando com token: ***"
+          echo "Deploy concluído com sucesso"
+        env:
+          DEPLOY_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
