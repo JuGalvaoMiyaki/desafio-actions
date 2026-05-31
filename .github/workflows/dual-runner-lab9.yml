@@ -50,4 +50,4 @@ jobs:
       - name: Simular acesso a recurso interno
         run: |
           echo "Simulando acesso a recurso disponível apenas na rede local..."
-          echo "Conexão com recurso interno: OK"
+          echo "Conexão com recurso interno: OK!"
