@@ -1,0 +1,53 @@
+name: Dual Runner Lab 9
+
+run-name: "Dual Runner — ${{ github.actor }} #${{ github.run_number }}"
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  github-hosted:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Identificar runner hospedado pelo GitHub
+        run: |
+          echo "=== Runner Hospedado pelo GitHub ==="
+          echo "OS real   : ${{ runner.os }}"
+          echo "Arch      : ${{ runner.arch }}"
+          echo "Hostname  : $(hostname)"
+          echo "Workspace : ${{ github.workspace }}"
+
+      - name: Confirmar que é GitHub-hosted
+        run: |
+          echo "Este job rodou em uma VM do GitHub"
+          echo "A VM será destruída após o job terminar"
+
+  interno:
+    runs-on: [self-hosted, internal]
+    timeout-minutes: 5
+
+    steps:
+      - name: Identificar runner auto-hospedado
+        run: |
+          echo "=== Runner Auto-hospedado (label: internal) ==="
+          echo "OS real   : ${{ runner.os }}"
+          echo "Arch      : ${{ runner.arch }}"
+          echo "Hostname  : $(hostname)"
+          echo "Workspace : ${{ github.workspace }}"
+
+      - name: Confirmar que é self-hosted
+        run: |
+          echo "Este job rodou no runner local registrado com label 'internal'"
+          echo "O runner persiste após o job terminar (não é efêmero)"
+
+      - name: Simular acesso a recurso interno
+        run: |
+          echo "Simulando acesso a recurso disponível apenas na rede local..."
+          echo "Conexão com recurso interno: OK"
