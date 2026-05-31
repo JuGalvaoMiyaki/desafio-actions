@@ -5,7 +5,7 @@ run-name: "Dual Runner — ${{ github.actor }} #${{ github.run_number }}"
 on:
   push:
     branches:
-      - main
+      - master
 
 permissions:
   contents: read
