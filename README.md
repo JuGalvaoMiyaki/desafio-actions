@@ -43,8 +43,12 @@ Plaintext
 │   └── deploy-manual.yml     # Pipeline interativo para execução de deploys sob demanda
 ├── app.js                    # Aplicação em JavaScript base para simulações do ambiente
 └── README.md                 # Documentação completa do ecossistema (este arquivo)
-🛠️ Detalhamento Técnico dos Workflows
-1. CI Módulo 4 (ci-modulo4.yml)
+```
+
+**🛠️ Detalhamento Técnico dos Workflows**
+
+## 1. CI Módulo 4 (ci-modulo4.yml)
+
 Este é o pipeline mais completo do laboratório. Ele simula o ciclo de vida real de uma aplicação contendo três estágios interdependentes:
 
 Job build: Compila o projeto, injeta o número da execução em uma variável global de saída ($GITHUB_OUTPUT) no formato 1.0.${{ github.run_number }} e empacota a pasta de distribuição usando a action oficial actions/upload-artifact@v4 com retenção de 7 dias.
@@ -55,19 +59,23 @@ Job notify: É disparado exclusivamente se houver alguma falha no fluxo (if: fai
 
 Gestão de Concorrência: Configurado com a diretiva cancel-in-progress: true escopado por branch, garantindo que se você realizar múltiplos pushes seguidos, as execuções antigas e redundantes serão canceladas para poupar minutos de runner.
 
-2. Pipeline Módulo 2 (pipeline-modulo2.yml)
+## 2. Pipeline Módulo 2 (pipeline-modulo2.yml)
 Focado em demonstrar a passagem de parâmetros através de chaves exaustivas. O estágio de build detecta dinamicamente a versão corrente da execução e a exporta através da propriedade outputs, permitindo que o estágio subsequente de testes herde e exiba esse valor em tempo de execução através da sintaxe ${{ needs.build.outputs.versao }}.
 
-3. Deploy Manual (deploy-manual.yml)
+## 3. Deploy Manual (deploy-manual.yml)
+
 Uma esteira interativa que introduz o conceito de workflow_dispatch. Ao acessar a aba "Actions" no painel do GitHub, o operador pode acionar manualmente o gatilho escolhendo através de uma caixa de seleção (choice) o ambiente de destino do deploy (dev, staging ou prod). O fluxo valida a string escolhida e aplica alertas customizados caso o ambiente crítico de produção seja selecionado.
 
-4. Filtro de Caminho (ci-src.yml)
+## 4. Filtro de Caminho (ci-src.yml)
+
 Demonstra otimização de custo e tempo de máquina. Este workflow só é acordado pelo GitHub caso ocorra uma modificação explícita nos arquivos localizados dentro da estrutura de diretórios do código-fonte principal (src/). Alterações exclusivas na documentação ou arquivos de configuração ignoram este fluxo.
 
-5. Revisão de Pull Request (pr-opened.yml)
+## 5. Revisão de Pull Request (pr-opened.yml)
+
 Configurado para reagir especificamente ao gatilho pull_request quando o status for marcado como opened. É ideal para acionar robôs de code-review, inspecionar se o título obedece aos padrões de Conventional Commits e extrair metadados como a branch de origem (head) e a branch de destino (base).
 
-⚙️ Aprendizados Práticos Demonstrados
+**⚙️ Aprendizados Práticos Demonstrados**
+
 Este repositório cobre os principais pilares de infraestrutura como código para automações:
 
 Contextos de Execução: Mapeamento profundo do objeto ${{ github }} para auditoria de runtime (identificação de autores, hashes de commits e links diretos).
@@ -78,7 +86,8 @@ Encadeamento Sequencial: Uso da tag needs para traçar caminhos dependentes de e
 
 Condicionais Dinâmicas: Aplicação de regras lógicas de controle de fluxo baseadas em status (if: failure()).
 
-👩‍💻 Autoria e Contribuições
+**👩‍💻 Autoria e Contribuições**
+
 Desenvolvedora Responsável: Juliana Galvão Miyaki
 
 E-mail de Contato: juliana.galvao@tbxtech.com
